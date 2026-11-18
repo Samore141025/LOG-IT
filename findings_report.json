@@ -1,0 +1,382 @@
+{
+  "generated_at": "2026-11-18T11:59:40.757699+00:00",
+  "agent": "log_analysis",
+  "database": "sqlite:///logit_cyber.db",
+  "llm_model": "gemini-2.5-flash",
+  "total_events_analyzed": 16,
+  "total_threats_detected": 3,
+  "threats": [
+    {
+      "id": "1a36ce56-aa24-486b-aa34-f353fc959938",
+      "rule": "T1110.001 - brute_force_compromise",
+      "mitre_technique": "T1110.001",
+      "severity": "critical",
+      "verdict": "malicious",
+      "confidence": 0.95,
+      "reasoning": "Brute force compromise detected from IP 198.51.100.99: 5 failed logins within 300s followed by successful login as user 'root'.\n\n\ud83d\udee1\ufe0f Actionable Solutions & Remediation Playbook:\n[IMMEDIATE CONTAINMENT] Block attacker IP 198.51.100.99 at network and host firewall:\n  \u2022 Linux iptables: sudo iptables -A INPUT -s 198.51.100.99 -j DROP\n  \u2022 Linux ufw: sudo ufw deny from 198.51.100.99\n  \u2022 Windows Firewall: netsh advfirewall firewall add rule name=\"Block-198.51.100.99\" dir=in action=block remoteip=198.51.100.99\n[ACCOUNT REMEDIATION] Terminate active sessions and force password reset for user 'root':\n  \u2022 Linux session kill: sudo pkill -u root -9\n  \u2022 Linux password reset: sudo passwd -l root (lock) or sudo passwd root (reset)\n  \u2022 Windows lock: Disable-LocalUser -Name 'root' or Set-ADUser 'root' -Enabled $false\n[SYSTEM HARDENING] Long-term protection against credential attacks:\n  \u2022 Disable SSH password authentication: set 'PasswordAuthentication no' in /etc/ssh/sshd_config\n  \u2022 Enforce Multi-Factor Authentication (MFA / Duo / Google Authenticator) for all remote logins\n  \u2022 Install and configure automated IP banning: sudo apt install fail2ban",
+      "entities": {
+        "users": [
+          "root"
+        ],
+        "ips": [
+          "198.51.100.99"
+        ],
+        "hosts": [
+          "host01"
+        ],
+        "remediation": [
+          "[IMMEDIATE CONTAINMENT] Block attacker IP 198.51.100.99 at network and host firewall:",
+          "  \u2022 Linux iptables: sudo iptables -A INPUT -s 198.51.100.99 -j DROP",
+          "  \u2022 Linux ufw: sudo ufw deny from 198.51.100.99",
+          "  \u2022 Windows Firewall: netsh advfirewall firewall add rule name=\"Block-198.51.100.99\" dir=in action=block remoteip=198.51.100.99",
+          "[ACCOUNT REMEDIATION] Terminate active sessions and force password reset for user 'root':",
+          "  \u2022 Linux session kill: sudo pkill -u root -9",
+          "  \u2022 Linux password reset: sudo passwd -l root (lock) or sudo passwd root (reset)",
+          "  \u2022 Windows lock: Disable-LocalUser -Name 'root' or Set-ADUser 'root' -Enabled $false",
+          "[SYSTEM HARDENING] Long-term protection against credential attacks:",
+          "  \u2022 Disable SSH password authentication: set 'PasswordAuthentication no' in /etc/ssh/sshd_config",
+          "  \u2022 Enforce Multi-Factor Authentication (MFA / Duo / Google Authenticator) for all remote logins",
+          "  \u2022 Install and configure automated IP banning: sudo apt install fail2ban"
+        ]
+      },
+      "remediation": [
+        "[IMMEDIATE CONTAINMENT] Block attacker IP 198.51.100.99 at network and host firewall:",
+        "  \u2022 Linux iptables: sudo iptables -A INPUT -s 198.51.100.99 -j DROP",
+        "  \u2022 Linux ufw: sudo ufw deny from 198.51.100.99",
+        "  \u2022 Windows Firewall: netsh advfirewall firewall add rule name=\"Block-198.51.100.99\" dir=in action=block remoteip=198.51.100.99",
+        "[ACCOUNT REMEDIATION] Terminate active sessions and force password reset for user 'root':",
+        "  \u2022 Linux session kill: sudo pkill -u root -9",
+        "  \u2022 Linux password reset: sudo passwd -l root (lock) or sudo passwd root (reset)",
+        "  \u2022 Windows lock: Disable-LocalUser -Name 'root' or Set-ADUser 'root' -Enabled $false",
+        "[SYSTEM HARDENING] Long-term protection against credential attacks:",
+        "  \u2022 Disable SSH password authentication: set 'PasswordAuthentication no' in /etc/ssh/sshd_config",
+        "  \u2022 Enforce Multi-Factor Authentication (MFA / Duo / Google Authenticator) for all remote logins",
+        "  \u2022 Install and configure automated IP banning: sudo apt install fail2ban"
+      ],
+      "created_at": "2026-11-18T11:43:11.913699"
+    },
+    {
+      "id": "dfc12509-b22e-4117-8b2b-2a79f449fae4",
+      "rule": "T1059.004 - reverse_shell_bash_tcp",
+      "mitre_technique": "T1059.004",
+      "severity": "critical",
+      "verdict": "malicious",
+      "confidence": 0.95,
+      "reasoning": "Suspicious command execution detected: Interactive bash reverse shell redirection via /dev/tcp. Matched pattern: 'bash -i >& /dev/tcp/10'. Host: host01, User: 'attacker'.\n\n\ud83d\udee1\ufe0f Actionable Solutions & Remediation Playbook:\n[CRITICAL CONTAINMENT] Immediately isolate host 'host01' from the network:\n  \u2022 Linux disable network: sudo ip link set dev eth0 down\n  \u2022 Windows disable network: Disable-NetAdapter -Name 'Ethernet*' -Confirm:$false\n[PROCESS TERMINATION] Identify and kill rogue command and reverse shell processes:\n  \u2022 Linux: ps aux | grep -E 'nc|bash|sh|python|socat' | grep -v grep\n  \u2022 Kill rogue PID: sudo kill -9 <PID>\n  \u2022 Windows: Get-Process | Where-Object {$_.CommandLine -match 'powershell|cmd|certutil'}\n[PERSISTENCE AUDITING] Inspect scheduled tasks and startup locations for backdoors:\n  \u2022 Linux crontabs: sudo crontab -l; sudo ls -la /etc/cron.* /var/spool/cron/crontabs\n  \u2022 Linux systemd services: sudo systemctl list-unit-files --state=enabled\n  \u2022 Check writable staging dirs: sudo ls -lat /tmp /dev/shm /var/tmp\n  \u2022 Windows persistence: Get-ScheduledTask | Where-Object {$_.State -ne 'Disabled'}\n[CREDENTIAL REVOCATION] Rotate all service account tokens and SSH authorized_keys present on this host.",
+      "entities": {
+        "users": [
+          "attacker"
+        ],
+        "ips": [],
+        "hosts": [
+          "host01"
+        ],
+        "remediation": [
+          "[CRITICAL CONTAINMENT] Immediately isolate host 'host01' from the network:",
+          "  \u2022 Linux disable network: sudo ip link set dev eth0 down",
+          "  \u2022 Windows disable network: Disable-NetAdapter -Name 'Ethernet*' -Confirm:$false",
+          "[PROCESS TERMINATION] Identify and kill rogue command and reverse shell processes:",
+          "  \u2022 Linux: ps aux | grep -E 'nc|bash|sh|python|socat' | grep -v grep",
+          "  \u2022 Kill rogue PID: sudo kill -9 <PID>",
+          "  \u2022 Windows: Get-Process | Where-Object {$_.CommandLine -match 'powershell|cmd|certutil'}",
+          "[PERSISTENCE AUDITING] Inspect scheduled tasks and startup locations for backdoors:",
+          "  \u2022 Linux crontabs: sudo crontab -l; sudo ls -la /etc/cron.* /var/spool/cron/crontabs",
+          "  \u2022 Linux systemd services: sudo systemctl list-unit-files --state=enabled",
+          "  \u2022 Check writable staging dirs: sudo ls -lat /tmp /dev/shm /var/tmp",
+          "  \u2022 Windows persistence: Get-ScheduledTask | Where-Object {$_.State -ne 'Disabled'}",
+          "[CREDENTIAL REVOCATION] Rotate all service account tokens and SSH authorized_keys present on this host."
+        ]
+      },
+      "remediation": [
+        "[CRITICAL CONTAINMENT] Immediately isolate host 'host01' from the network:",
+        "  \u2022 Linux disable network: sudo ip link set dev eth0 down",
+        "  \u2022 Windows disable network: Disable-NetAdapter -Name 'Ethernet*' -Confirm:$false",
+        "[PROCESS TERMINATION] Identify and kill rogue command and reverse shell processes:",
+        "  \u2022 Linux: ps aux | grep -E 'nc|bash|sh|python|socat' | grep -v grep",
+        "  \u2022 Kill rogue PID: sudo kill -9 <PID>",
+        "  \u2022 Windows: Get-Process | Where-Object {$_.CommandLine -match 'powershell|cmd|certutil'}",
+        "[PERSISTENCE AUDITING] Inspect scheduled tasks and startup locations for backdoors:",
+        "  \u2022 Linux crontabs: sudo crontab -l; sudo ls -la /etc/cron.* /var/spool/cron/crontabs",
+        "  \u2022 Linux systemd services: sudo systemctl list-unit-files --state=enabled",
+        "  \u2022 Check writable staging dirs: sudo ls -lat /tmp /dev/shm /var/tmp",
+        "  \u2022 Windows persistence: Get-ScheduledTask | Where-Object {$_.State -ne 'Disabled'}",
+        "[CREDENTIAL REVOCATION] Rotate all service account tokens and SSH authorized_keys present on this host."
+      ],
+      "created_at": "2026-11-18T11:43:11.913699"
+    },
+    {
+      "id": "dfbb4e41-87f8-487e-82ee-133bf7395f42",
+      "rule": "T1190 - sql_injection_attempt",
+      "mitre_technique": "T1190",
+      "severity": "high",
+      "verdict": "malicious",
+      "confidence": 0.92,
+      "reasoning": "SQL Injection payload pattern detected in HTTP request from 198.51.100.88: '/search.php?id=1 UNION SELECT username,password FROM users'.\n\n\ud83d\udee1\ufe0f Actionable Solutions & Remediation Playbook:\n[PERIMETER MITIGATION] Block source IP 198.51.100.88 on your Web Application Firewall (WAF) or Reverse Proxy:\n  \u2022 Nginx block: add 'deny 198.51.100.88;' to /etc/nginx/conf.d/blocklist.conf and run 'nginx -s reload'\n  \u2022 Apache block: Require not ip 198.51.100.88\n  \u2022 Cloudflare WAF: Add IP Access Rule to block 198.51.100.88\n[CODE-LEVEL REMEDIATION] Patch vulnerable web application endpoints:\n  \u2022 SQL Injection: Replace raw SQL string concatenation with Parameterized Queries (Prepared Statements)\n  \u2022 XSS: Enforce Context-Aware Output HTML Encoding and configure Content-Security-Policy (CSP) headers\n  \u2022 Path Traversal: Canonicalize filenames with os.path.realpath() and disallow '..' path segments\n[DATABASE SECURITY] Enforce principle of least privilege for web application database accounts:\n  \u2022 Revoke administrative/SUPERUSER rights from web application DB users\n  \u2022 Disable database command execution functions (e.g. xp_cmdshell in MSSQL)",
+      "entities": {
+        "users": [],
+        "ips": [
+          "198.51.100.88"
+        ],
+        "hosts": [
+          "webserver"
+        ],
+        "remediation": [
+          "[PERIMETER MITIGATION] Block source IP 198.51.100.88 on your Web Application Firewall (WAF) or Reverse Proxy:",
+          "  \u2022 Nginx block: add 'deny 198.51.100.88;' to /etc/nginx/conf.d/blocklist.conf and run 'nginx -s reload'",
+          "  \u2022 Apache block: Require not ip 198.51.100.88",
+          "  \u2022 Cloudflare WAF: Add IP Access Rule to block 198.51.100.88",
+          "[CODE-LEVEL REMEDIATION] Patch vulnerable web application endpoints:",
+          "  \u2022 SQL Injection: Replace raw SQL string concatenation with Parameterized Queries (Prepared Statements)",
+          "  \u2022 XSS: Enforce Context-Aware Output HTML Encoding and configure Content-Security-Policy (CSP) headers",
+          "  \u2022 Path Traversal: Canonicalize filenames with os.path.realpath() and disallow '..' path segments",
+          "[DATABASE SECURITY] Enforce principle of least privilege for web application database accounts:",
+          "  \u2022 Revoke administrative/SUPERUSER rights from web application DB users",
+          "  \u2022 Disable database command execution functions (e.g. xp_cmdshell in MSSQL)"
+        ]
+      },
+      "remediation": [
+        "[PERIMETER MITIGATION] Block source IP 198.51.100.88 on your Web Application Firewall (WAF) or Reverse Proxy:",
+        "  \u2022 Nginx block: add 'deny 198.51.100.88;' to /etc/nginx/conf.d/blocklist.conf and run 'nginx -s reload'",
+        "  \u2022 Apache block: Require not ip 198.51.100.88",
+        "  \u2022 Cloudflare WAF: Add IP Access Rule to block 198.51.100.88",
+        "[CODE-LEVEL REMEDIATION] Patch vulnerable web application endpoints:",
+        "  \u2022 SQL Injection: Replace raw SQL string concatenation with Parameterized Queries (Prepared Statements)",
+        "  \u2022 XSS: Enforce Context-Aware Output HTML Encoding and configure Content-Security-Policy (CSP) headers",
+        "  \u2022 Path Traversal: Canonicalize filenames with os.path.realpath() and disallow '..' path segments",
+        "[DATABASE SECURITY] Enforce principle of least privilege for web application database accounts:",
+        "  \u2022 Revoke administrative/SUPERUSER rights from web application DB users",
+        "  \u2022 Disable database command execution functions (e.g. xp_cmdshell in MSSQL)"
+      ],
+      "created_at": "2026-11-18T11:43:11.913699"
+    }
+  ],
+  "mitre_matrix": {
+    "total_detections": 3,
+    "tactics_coverage": 3,
+    "total_tactics": 14,
+    "matrix": [
+      {
+        "tactic": "Reconnaissance",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Resource Development",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Initial Access",
+        "count": 1,
+        "percentage": 33.3,
+        "techniques": [
+          "T1190"
+        ],
+        "active": true
+      },
+      {
+        "tactic": "Execution",
+        "count": 1,
+        "percentage": 33.3,
+        "techniques": [
+          "T1059.004"
+        ],
+        "active": true
+      },
+      {
+        "tactic": "Persistence",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Privilege Escalation",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Defense Evasion",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Credential Access",
+        "count": 1,
+        "percentage": 33.3,
+        "techniques": [
+          "T1110.001"
+        ],
+        "active": true
+      },
+      {
+        "tactic": "Discovery",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Lateral Movement",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Collection",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Command and Control",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Exfiltration",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      },
+      {
+        "tactic": "Impact",
+        "count": 0,
+        "percentage": 0.0,
+        "techniques": [],
+        "active": false
+      }
+    ]
+  },
+  "compliance": {
+    "PCI-DSS v4.0": [
+      {
+        "control_id": "Req 10.2.1",
+        "description": "Verify audit logs capture all invalid logical access attempts",
+        "status": "PASS / MONITORED",
+        "evidence": "Active brute force / invalid access detected and quarantined."
+      },
+      {
+        "control_id": "Req 10.2.2",
+        "description": "Verify audit logs capture all actions taken by administrative users",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "Req 10.2.4",
+        "description": "Verify audit logs record invalid access to sensitive resources",
+        "status": "PASS / MONITORED",
+        "evidence": "Active brute force / invalid access detected and quarantined."
+      },
+      {
+        "control_id": "Req 10.2.5",
+        "description": "Verify initialization and modification of system logs",
+        "status": "PASS / MONITORED",
+        "evidence": "Cryptographic ledger and log tamper detector operational."
+      },
+      {
+        "control_id": "Req 10.3.1",
+        "description": "Verify audit logs record user identification and timestamp",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "Req 10.4.1",
+        "description": "Verify audit logs are reviewed dynamically for anomalies",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      }
+    ],
+    "SOC 2 Type II": [
+      {
+        "control_id": "CC6.1",
+        "description": "Logical access controls prevent unauthorized access",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "CC6.6",
+        "description": "Measures protect against intrusion and malware attacks",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "CC6.8",
+        "description": "Procedures detect and prevent unauthorized or malicious software",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "CC7.2",
+        "description": "System anomalies are monitored and analyzed in real time",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      }
+    ],
+    "ISO/IEC 27001:2022": [
+      {
+        "control_id": "A.8.15",
+        "description": "Logging: Event logs recording user activities, exceptions, faults",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "A.8.16",
+        "description": "Monitoring activities: Networks, systems and applications monitored",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "A.8.20",
+        "description": "Network security: Controls established to protect information in networks",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "A.8.24",
+        "description": "Use of cryptography: Protection of audit trails against tampering",
+        "status": "PASS / MONITORED",
+        "evidence": "Cryptographic ledger and log tamper detector operational."
+      }
+    ],
+    "HIPAA Security Rule": [
+      {
+        "control_id": "45 CFR \u00a7 164.312(b)",
+        "description": "Audit controls: Hardware and software mechanisms to record activity",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "45 CFR \u00a7 164.308(a)(1)",
+        "description": "Security management: Implement procedures to detect security violations",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      },
+      {
+        "control_id": "45 CFR \u00a7 164.308(a)(6)",
+        "description": "Security incident procedures: Address and mitigate security incidents",
+        "status": "PASS / MONITORED",
+        "evidence": "Automated continuous log monitoring active."
+      }
+    ]
+  },
+  "forensic_ledger": {
+    "valid": true,
+    "total_blocks": 2,
+    "latest_hash": "0c4f2a8d31a1c741d5cd67bf0853c9986df27e8600ba743c65a4bea2a92d0d2b",
+    "message": "All cryptographic blocks intact. Zero evidence of tampering."
+  }
+}

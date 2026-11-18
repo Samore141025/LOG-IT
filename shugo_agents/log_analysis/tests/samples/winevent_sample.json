@@ -1,0 +1,122 @@
+﻿[
+    {
+        "Id":  7040,
+        "TimeCreated":  "\/Date(1794992386489)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The start type of the IsolationSession service was changed from auto start to demand start."
+    },
+    {
+        "Id":  105,
+        "TimeCreated":  "\/Date(1794992360609)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "Power source change."
+    },
+    {
+        "Id":  7040,
+        "TimeCreated":  "\/Date(1794992356462)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The start type of the IsolationSession service was changed from demand start to auto start."
+    },
+    {
+        "Id":  10001,
+        "TimeCreated":  "\/Date(1794991832250)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "Unable to start a DCOM Server: {F3B5324B-98B2-4523-BBE5-1ABAB8B4D7D3} as Unavailable/Unavailable. The error:\r\n\"2147942403\"\r\nHappened while starting this command:\r\n\"C:\\Program Files\\WindowsApps\\7EE7776C.LinkedInforWindows_3.0.43.0_x64__w1wdnht996qgy\\LinkedIn\\LinkedIn.exe\" ----WindowsAppRuntimePushServer: -Embedding"
+    },
+    {
+        "Id":  10001,
+        "TimeCreated":  "\/Date(1794991712896)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "Unable to start a DCOM Server: {F3B5324B-98B2-4523-BBE5-1ABAB8B4D7D3} as Unavailable/Unavailable. The error:\r\n\"2147942403\"\r\nHappened while starting this command:\r\n\"C:\\Program Files\\WindowsApps\\7EE7776C.LinkedInforWindows_3.0.43.0_x64__w1wdnht996qgy\\LinkedIn\\LinkedIn.exe\" ----WindowsAppRuntimePushServer: -Embedding"
+    },
+    {
+        "Id":  10016,
+        "TimeCreated":  "\/Date(1794991643281)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID \r\n{2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}\r\n and APPID \r\n{15C20B67-12E7-4BB6-92BB-7AFF07997402}\r\n to the user SAMORE\\SAMORE SID (S-1-5-21-688331643-4215170416-2286058891-1000) from address LocalHost (Using LRPC) running in the application container Claude_5.1231.2.0_x64__pzs8sxrjxfjjc SID (Unavailable). This security permission can be modified using the Component Services administrative tool."
+    },
+    {
+        "Id":  16,
+        "TimeCreated":  "\/Date(1794991621302)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The access history in hive \\??\\C:\\Users\\USER\\AppData\\Local\\Packages\\Claude_pzs8sxrjxfjjc\\SystemAppData\\Helium\\UserClasses.dat was cleared updating 50 keys and creating 6 modified pages."
+    },
+    {
+        "Id":  16,
+        "TimeCreated":  "\/Date(1794991621293)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The access history in hive \\??\\C:\\Users\\USER\\AppData\\Local\\Packages\\Claude_pzs8sxrjxfjjc\\SystemAppData\\Helium\\User.dat was cleared updating 35 keys and creating 6 modified pages."
+    },
+    {
+        "Id":  10016,
+        "TimeCreated":  "\/Date(1794991520067)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID \r\n{2593F8B9-4EAF-457C-B68A-50F6B8EA6B54}\r\n and APPID \r\n{15C20B67-12E7-4BB6-92BB-7AFF07997402}\r\n to the user SAMORE\\SAMORE SID (S-1-5-21-688331643-4215170416-2286058891-1000) from address LocalHost (Using LRPC) running in the application container Unavailable SID (Unavailable). This security permission can be modified using the Component Services administrative tool."
+    },
+    {
+        "Id":  16,
+        "TimeCreated":  "\/Date(1794991405915)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The access history in hive \\??\\C:\\ProgramData\\Packages\\Microsoft.VisualStudioCode_8wekyb3d8bbwe\\S-1-5-21-688331643-4215170416-2286058891-1000\\SystemAppData\\Helium\\Cache\\2f54a8e8e99b44db_COM15.dat was cleared updating 1 keys and creating 1 modified pages."
+    },
+    {
+        "Id":  16,
+        "TimeCreated":  "\/Date(1794991405641)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The access history in hive \\??\\C:\\ProgramData\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\S-1-5-21-688331643-4215170416-2286058891-1000\\SystemAppData\\Helium\\Cache\\545d61c3a0218c4f_COM15.dat was cleared updating 1 keys and creating 1 modified pages."
+    },
+    {
+        "Id":  16,
+        "TimeCreated":  "\/Date(1794991405637)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The access history in hive \\??\\C:\\Users\\USER\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\SystemAppData\\Helium\\UserClasses.dat was cleared updating 1 keys and creating 1 modified pages."
+    },
+    {
+        "Id":  16,
+        "TimeCreated":  "\/Date(1794991405634)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The access history in hive \\??\\C:\\Users\\USER\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\SystemAppData\\Helium\\User.dat was cleared updating 7 keys and creating 1 modified pages."
+    },
+    {
+        "Id":  566,
+        "TimeCreated":  "\/Date(1794991195139)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The system session has transitioned from 190 to 191.\r\n\r\nReason PolicyChange \r\n\r\nBootId: 57"
+    },
+    {
+        "Id":  507,
+        "TimeCreated":  "\/Date(1794991195139)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The system is exiting Modern Standby \r\n\r\nReason: Lid."
+    },
+    {
+        "Id":  701,
+        "TimeCreated":  "\/Date(1794991194876)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "Power Manager has not requested suppression of all input (INPUT_SUPPRESS_REQUEST=0)"
+    },
+    {
+        "Id":  701,
+        "TimeCreated":  "\/Date(1794991194876)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "Power Manager has not requested suppression of all input (INPUT_SUPPRESS_REQUEST=0)"
+    },
+    {
+        "Id":  566,
+        "TimeCreated":  "\/Date(1794991191790)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The system session has transitioned from 189 to 190.\r\n\r\nReason PolicyChange \r\n\r\nBootId: 57"
+    },
+    {
+        "Id":  506,
+        "TimeCreated":  "\/Date(1794991191649)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The system is entering Modern Standby \r\n\r\nReason: Lid."
+    },
+    {
+        "Id":  566,
+        "TimeCreated":  "\/Date(1794991191648)\/",
+        "MachineName":  "SAMORE",
+        "Message":  "The system session has transitioned from 188 to 189.\r\n\r\nReason PolicyChange \r\n\r\nBootId: 57"
+    }
+]

@@ -1,0 +1,14 @@
+title: Linux Scheduled Task Persistence Modification
+id: c9d8e7f6-1234-5678-90ab-abcdef123456
+status: stable
+description: Detects unauthorized edits or script drops into /etc/cron or crontab directories.
+level: high
+tags:
+  - attack.t1053.003
+detection:
+  selection:
+    command:
+      - "/etc/cron"
+      - "crontab -e"
+      - "/etc/crontab"
+  condition: selection

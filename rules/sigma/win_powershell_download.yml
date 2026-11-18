@@ -1,0 +1,16 @@
+title: Suspicious PowerShell Download Cradle
+id: f1a2b3c4-5678-90ab-cdef-1234567890ab
+status: stable
+description: Detects PowerShell command line patterns downloading remote code or scripts.
+level: high
+tags:
+  - attack.t1059.001
+detection:
+  selection:
+    command:
+      - "DownloadString"
+      - "Invoke-WebRequest"
+      - "curl.exe"
+      - "wget.exe"
+      - "IEX"
+  condition: selection

@@ -1,0 +1,118 @@
+# ==============================================================================
+# SHUGO Log Analysis Agent (Agent #4) Configuration
+# ==============================================================================
+
+# Database Connection Settings
+database:
+  # May be overridden by DATABASE_URL environment variable
+  url: "postgresql+psycopg2://postgres:postgres@localhost:5432/shugo_cyber"
+  pool_size: 5
+  max_overflow: 10
+  pool_timeout: 30
+  pool_recycle: 1800
+
+# Autonomous Runtime Settings
+runtime:
+  agent_name: "log_analysis"
+  batch_size: 500
+  poll_interval_idle_seconds: 5.0
+  poll_interval_busy_seconds: 0.5
+  heartbeat_interval_seconds: 15.0
+  max_memory_window_minutes: 120
+
+# Temporary Real-Log Ingestion Settings
+# (Replaceable by future Data Collection & Preprocessing Agents)
+ingest:
+  enabled: true
+  state_file_path: "tailer_state.json"
+  batch_size: 200
+  watched_files:
+    "/var/log/auth.log": "auth_syslog"
+    "/var/log/syslog": "auth_syslog"
+    "/var/log/nginx/access.log": "web_access"
+
+# Google Gemini Reasoning Layer Settings
+gemini:
+  # Read from GEMINI_API_KEY environment variable if null
+  api_key: null
+  # Read from GEMINI_MODEL environment variable or defaults to gemini-2.5-flash
+  model: "gemini-2.5-flash"
+  temperature: 0.1
+  timeout_seconds: 30.0
+  max_retries: 3
+  rate_limit_rpm: 15       # Requests per minute (fits free tier)
+  rate_limit_rpd: 1500     # Requests per day (fits free tier)
+
+# Data Privacy & Pre-LLM Redaction Settings
+redaction:
+  mask_passwords: true
+  mask_tokens: true
+  mask_cookies: true
+  hash_internal_ips: false
+  internal_ip_prefixes:
+    - "10."
+    - "172.16."
+    - "192.168."
+
+# Baseline Store Settings
+baseline:
+  min_events_threshold: 20
+  min_learning_period_hours: 24.0
+
+# Detection Modules Configuration
+detectors:
+  # 1. Brute Force Login Detector
+  brute_force:
+    enabled: true
+    failure_threshold: 5
+    window_seconds: 300
+    escalate_on_success: true
+
+  # 2. Password Spraying Detector
+  password_spray:
+    enabled: true
+    distinct_user_threshold: 4
+    window_seconds: 600
+
+  # 3. Impossible Login / Speed Distance Detector
+  impossible_login:
+    enabled: true
+    geolite_city_db_path: null  # e.g., "/opt/geoip/GeoLite2-City.mmdb"
+    max_speed_kmh: 800.0
+    min_distance_km: 200.0
+
+  # 4. Unusual Hours Login Detector (Baseline Dependent)
+  unusual_hours:
+    enabled: true
+
+  # 5. Privilege Escalation Detector
+  privilege_escalation:
+    enabled: true
+    sensitive_groups:
+      - "sudo"
+      - "admin"
+      - "wheel"
+      - "root"
+      - "Administrators"
+      - "Domain Admins"
+
+  # 6. Suspicious Commands & Exploits Detector
+  suspicious_commands:
+    enabled: true
+
+  # 7. Web Application Attacks Detector
+  web_attacks:
+    enabled: true
+    error_burst_threshold: 15
+    error_burst_window_seconds: 60
+
+  # 8. Anti-Forensics & Log Tampering Detector
+  log_tampering:
+    enabled: true
+    max_silent_gap_minutes: 60.0
+
+  # 9. Statistical Rare Event Anomaly Detector (Baseline Dependent)
+  rare_event:
+    enabled: true
+    z_score_threshold: 3.0
+    mad_threshold: 3.5

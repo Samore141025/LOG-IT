@@ -1,0 +1,27 @@
+# Environment variables & secrets
+.env
+*.env
+.agent.pid
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# State & database test files
+tailer_state.json
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+

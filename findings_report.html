@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOG-IT Autonomous Security Findings Report</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            color: #38bdf8;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-meta {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .stat-val {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f8fafc;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .guide-box {
+            background: #1e1b4b;
+            border: 1px solid #4338ca;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+        .guide-box h3 {
+            margin-top: 0;
+            color: #a5b4fc;
+        }
+        .guide-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .guide-step {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid #3730a3;
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+        .guide-step strong {
+            color: #c7d2fe;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-btn {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #475569;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: #0284c7;
+            color: white;
+            border-color: #38bdf8;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        .badge-mitre {
+            background: #334155;
+            color: #cbd5e1;
+            border: 1px solid #475569;
+            margin-left: 6px;
+        }
+        .callout-plain {
+            background: #0f172a;
+            border-left: 4px solid #38bdf8;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+        }
+        .entity-label {
+            display: block;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+        .entity-val {
+            font-family: monospace;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .remediation-section {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .step-title {
+            color: #e2e8f0;
+            font-weight: 600;
+            margin: 12px 0 6px 0;
+            font-size: 0.95rem;
+        }
+        .step-title:first-child {
+            margin-top: 0;
+        }
+        .cmd-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 0.85rem;
+            color: #a5f3fc;
+        }
+        .cmd-text {
+            word-break: break-all;
+            margin-right: 12px;
+        }
+        .copy-btn {
+            background: #334155;
+            color: #f8fafc;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ LOG-IT Autonomous Security Findings Report</h1>
+            <div class="header-meta">
+                Generated: <strong>2026-11-18 11:59:40 UTC</strong> | Engine: <strong>Google Gemini (gemini-2.5-flash)</strong> | Database: <strong>sqlite:///logit_cyber.db</strong>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-val" style="color: #38bdf8;">16</div>
+                <div class="stat-label">Events Analyzed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color: #ef4444;">2</div>
+                <div class="stat-label">Critical Threats</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color: #f97316;">1</div>
+                <div class="stat-label">High Severity</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color: #eab308;">0</div>
+                <div class="stat-label">Medium & Low</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color: #a855f7;">2</div>
+                <div class="stat-label">Attacker IPs</div>
+            </div>
+        </div>
+
+        <div class="guide-box">
+            <h3>🔰 Quick-Start Incident Response Guide (For New Users)</h3>
+            <p style="margin: 0 0 8px 0; color: #cbd5e1; font-size: 0.95rem;">
+                If your system was attacked, follow this 3-step playbook for each threat card below:
+            </p>
+            <div class="guide-steps">
+                <div class="guide-step">
+                    <strong>1. Stop the Attacker (Immediate)</strong>
+                    Click <strong>Copy</strong> on the firewall block command (iptables or Windows Firewall) and paste it into your server terminal to sever the attacker's connection.
+                </div>
+                <div class="guide-step">
+                    <strong>2. Evict Active Sessions</strong>
+                    Run the session termination command (<code>pkill</code> or Windows logoff) and immediately change the user password to revoke stolen credentials.
+                </div>
+                <div class="guide-step">
+                    <strong>3. Harden Against Future Attacks</strong>
+                    Disable SSH password logins (use SSH keys), enforce Multi-Factor Authentication (MFA), and install <code>fail2ban</code>.
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterThreats('all', this)">All Threats (3)</button>
+            <button class="filter-btn" onclick="filterThreats('critical', this)">Critical Only (2)</button>
+            <button class="filter-btn" onclick="filterThreats('high', this)">High Only (1)</button>
+            <button class="filter-btn" onclick="filterThreats('medium', this)">Medium & Low (0)</button>
+        </div>
+
+        <div id="threat-list">
+            
+        <div class="card threat-card" data-severity="critical">
+            <div class="card-header">
+                <div>
+                    <span class="badge" style="background:rgba(239, 68, 68, 0.15); color:#ef4444; border:1px solid #ef4444;">
+                        CRITICAL
+                    </span>
+                    <span class="badge badge-mitre">MITRE T1110.001</span>
+                    <h3 style="margin: 8px 0 4px 0; color: #f8fafc;">#1. T1110.001 - brute_force_compromise</h3>
+                </div>
+                <div style="text-align: right; color: #94a3b8; font-size: 0.9em;">
+                    Confidence: <strong>95%</strong><br>
+                    Verdict: <span style="color: #ef4444; font-weight: bold;">MALICIOUS</span>
+                </div>
+            </div>
+            
+            <div class="callout-plain">
+                <strong>💡 What happened in plain terms:</strong><br>
+                An attacker at 198.51.100.99 repeatedly guessed passwords until they successfully logged into 'root' on host01. This account is likely compromised. Immediate session kill, password change, and firewall block are required.
+            </div>
+
+            <div class="entity-grid">
+                <div class="entity-item">
+                    <span class="entity-label">Attacker IP(s)</span>
+                    <span class="entity-val" style="color: #f87171;">198.51.100.99</span>
+                </div>
+                <div class="entity-item">
+                    <span class="entity-label">Target User(s)</span>
+                    <span class="entity-val" style="color: #fbbf24;">root</span>
+                </div>
+                <div class="entity-item">
+                    <span class="entity-label">Affected Host</span>
+                    <span class="entity-val" style="color: #60a5fa;">host01</span>
+                </div>
+            </div>
+
+            <div class="remediation-section">
+                <h4 style="margin: 0 0 10px 0; color: #38bdf8;">🛡️ Step-by-Step Action Plan (Click Copy & Run on Your Server):</h4>
+                <div class='step-title'>👉 [IMMEDIATE CONTAINMENT] Block attacker IP 198.51.100.99 at network and host firewall:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux iptables: sudo iptables -A INPUT -s 198.51.100.99 -j DROP</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux iptables: sudo iptables -A INPUT -s 198.51.100.99 -j DROP')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux ufw: sudo ufw deny from 198.51.100.99</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux ufw: sudo ufw deny from 198.51.100.99')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Windows Firewall: netsh advfirewall firewall add rule name="Block-198.51.100.99" dir=in action=block remoteip=198.51.100.99</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Windows Firewall: netsh advfirewall firewall add rule name=&quot;Block-198.51.100.99&quot; dir=in action=block remoteip=198.51.100.99')">📋 Copy</button>
+                </div>
+                <div class='step-title'>👉 [ACCOUNT REMEDIATION] Terminate active sessions and force password reset for user 'root':</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux session kill: sudo pkill -u root -9</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux session kill: sudo pkill -u root -9')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux password reset: sudo passwd -l root (lock) or sudo passwd root (reset)</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux password reset: sudo passwd -l root (lock) or sudo passwd root (reset)')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Windows lock: Disable-LocalUser -Name 'root' or Set-ADUser 'root' -Enabled $false</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Windows lock: Disable-LocalUser -Name &#39;root&#39; or Set-ADUser &#39;root&#39; -Enabled $false')">📋 Copy</button>
+                </div>
+                <div class='step-title'>👉 [SYSTEM HARDENING] Long-term protection against credential attacks:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Disable SSH password authentication: set 'PasswordAuthentication no' in /etc/ssh/sshd_config</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Disable SSH password authentication: set &#39;PasswordAuthentication no&#39; in /etc/ssh/sshd_config')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Enforce Multi-Factor Authentication (MFA / Duo / Google Authenticator) for all remote logins</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Enforce Multi-Factor Authentication (MFA / Duo / Google Authenticator) for all remote logins')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Install and configure automated IP banning: sudo apt install fail2ban</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Install and configure automated IP banning: sudo apt install fail2ban')">📋 Copy</button>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="card threat-card" data-severity="critical">
+            <div class="card-header">
+                <div>
+                    <span class="badge" style="background:rgba(239, 68, 68, 0.15); color:#ef4444; border:1px solid #ef4444;">
+                        CRITICAL
+                    </span>
+                    <span class="badge badge-mitre">MITRE T1059.004</span>
+                    <h3 style="margin: 8px 0 4px 0; color: #f8fafc;">#2. T1059.004 - reverse_shell_bash_tcp</h3>
+                </div>
+                <div style="text-align: right; color: #94a3b8; font-size: 0.9em;">
+                    Confidence: <strong>95%</strong><br>
+                    Verdict: <span style="color: #ef4444; font-weight: bold;">MALICIOUS</span>
+                </div>
+            </div>
+            
+            <div class="callout-plain">
+                <strong>💡 What happened in plain terms:</strong><br>
+                A backdoor reverse shell was executed on host01. An attacker is attempting to obtain an interactive command prompt into your server. Isolate host01 from the network immediately and terminate the rogue process.
+            </div>
+
+            <div class="entity-grid">
+                <div class="entity-item">
+                    <span class="entity-label">Attacker IP(s)</span>
+                    <span class="entity-val" style="color: #f87171;">None identified</span>
+                </div>
+                <div class="entity-item">
+                    <span class="entity-label">Target User(s)</span>
+                    <span class="entity-val" style="color: #fbbf24;">attacker</span>
+                </div>
+                <div class="entity-item">
+                    <span class="entity-label">Affected Host</span>
+                    <span class="entity-val" style="color: #60a5fa;">host01</span>
+                </div>
+            </div>
+
+            <div class="remediation-section">
+                <h4 style="margin: 0 0 10px 0; color: #38bdf8;">🛡️ Step-by-Step Action Plan (Click Copy & Run on Your Server):</h4>
+                <div class='step-title'>👉 [CRITICAL CONTAINMENT] Immediately isolate host 'host01' from the network:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux disable network: sudo ip link set dev eth0 down</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux disable network: sudo ip link set dev eth0 down')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Windows disable network: Disable-NetAdapter -Name 'Ethernet*' -Confirm:$false</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Windows disable network: Disable-NetAdapter -Name &#39;Ethernet*&#39; -Confirm:$false')">📋 Copy</button>
+                </div>
+                <div class='step-title'>👉 [PROCESS TERMINATION] Identify and kill rogue command and reverse shell processes:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux: ps aux | grep -E 'nc|bash|sh|python|socat' | grep -v grep</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux: ps aux | grep -E &#39;nc|bash|sh|python|socat&#39; | grep -v grep')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Kill rogue PID: sudo kill -9 <PID></span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Kill rogue PID: sudo kill -9 <PID>')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Windows: Get-Process | Where-Object {$_.CommandLine -match 'powershell|cmd|certutil'}</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Windows: Get-Process | Where-Object {$_.CommandLine -match &#39;powershell|cmd|certutil&#39;}')">📋 Copy</button>
+                </div>
+                <div class='step-title'>👉 [PERSISTENCE AUDITING] Inspect scheduled tasks and startup locations for backdoors:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux crontabs: sudo crontab -l; sudo ls -la /etc/cron.* /var/spool/cron/crontabs</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux crontabs: sudo crontab -l; sudo ls -la /etc/cron.* /var/spool/cron/crontabs')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Linux systemd services: sudo systemctl list-unit-files --state=enabled</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Linux systemd services: sudo systemctl list-unit-files --state=enabled')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Check writable staging dirs: sudo ls -lat /tmp /dev/shm /var/tmp</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Check writable staging dirs: sudo ls -lat /tmp /dev/shm /var/tmp')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Windows persistence: Get-ScheduledTask | Where-Object {$_.State -ne 'Disabled'}</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Windows persistence: Get-ScheduledTask | Where-Object {$_.State -ne &#39;Disabled&#39;}')">📋 Copy</button>
+                </div>
+                <div class='step-title'>👉 [CREDENTIAL REVOCATION] Rotate all service account tokens and SSH authorized_keys present on this host.</div>
+            </div>
+        </div>
+        
+        <div class="card threat-card" data-severity="high">
+            <div class="card-header">
+                <div>
+                    <span class="badge" style="background:rgba(249, 115, 22, 0.15); color:#f97316; border:1px solid #f97316;">
+                        HIGH
+                    </span>
+                    <span class="badge badge-mitre">MITRE T1190</span>
+                    <h3 style="margin: 8px 0 4px 0; color: #f8fafc;">#3. T1190 - sql_injection_attempt</h3>
+                </div>
+                <div style="text-align: right; color: #94a3b8; font-size: 0.9em;">
+                    Confidence: <strong>92%</strong><br>
+                    Verdict: <span style="color: #f97316; font-weight: bold;">MALICIOUS</span>
+                </div>
+            </div>
+            
+            <div class="callout-plain">
+                <strong>💡 What happened in plain terms:</strong><br>
+                An external visitor at 198.51.100.88 submitted database manipulation commands (SQL Injection) in a web request. Block the IP address on your Web Application Firewall (WAF) and update the vulnerable code to use prepared statements.
+            </div>
+
+            <div class="entity-grid">
+                <div class="entity-item">
+                    <span class="entity-label">Attacker IP(s)</span>
+                    <span class="entity-val" style="color: #f87171;">198.51.100.88</span>
+                </div>
+                <div class="entity-item">
+                    <span class="entity-label">Target User(s)</span>
+                    <span class="entity-val" style="color: #fbbf24;">None identified</span>
+                </div>
+                <div class="entity-item">
+                    <span class="entity-label">Affected Host</span>
+                    <span class="entity-val" style="color: #60a5fa;">webserver</span>
+                </div>
+            </div>
+
+            <div class="remediation-section">
+                <h4 style="margin: 0 0 10px 0; color: #38bdf8;">🛡️ Step-by-Step Action Plan (Click Copy & Run on Your Server):</h4>
+                <div class='step-title'>👉 [PERIMETER MITIGATION] Block source IP 198.51.100.88 on your Web Application Firewall (WAF) or Reverse Proxy:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Nginx block: add 'deny 198.51.100.88;' to /etc/nginx/conf.d/blocklist.conf and run 'nginx -s reload'</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Nginx block: add &#39;deny 198.51.100.88;&#39; to /etc/nginx/conf.d/blocklist.conf and run &#39;nginx -s reload&#39;')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Apache block: Require not ip 198.51.100.88</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Apache block: Require not ip 198.51.100.88')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Cloudflare WAF: Add IP Access Rule to block 198.51.100.88</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Cloudflare WAF: Add IP Access Rule to block 198.51.100.88')">📋 Copy</button>
+                </div>
+                <div class='step-title'>👉 [CODE-LEVEL REMEDIATION] Patch vulnerable web application endpoints:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">SQL Injection: Replace raw SQL string concatenation with Parameterized Queries (Prepared Statements)</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'SQL Injection: Replace raw SQL string concatenation with Parameterized Queries (Prepared Statements)')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">XSS: Enforce Context-Aware Output HTML Encoding and configure Content-Security-Policy (CSP) headers</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'XSS: Enforce Context-Aware Output HTML Encoding and configure Content-Security-Policy (CSP) headers')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Path Traversal: Canonicalize filenames with os.path.realpath() and disallow '..' path segments</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Path Traversal: Canonicalize filenames with os.path.realpath() and disallow &#39;..&#39; path segments')">📋 Copy</button>
+                </div>
+                <div class='step-title'>👉 [DATABASE SECURITY] Enforce principle of least privilege for web application database accounts:</div>
+                <div class="cmd-box">
+                    <span class="cmd-text">Revoke administrative/SUPERUSER rights from web application DB users</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Revoke administrative/SUPERUSER rights from web application DB users')">📋 Copy</button>
+                </div>
+                
+                <div class="cmd-box">
+                    <span class="cmd-text">Disable database command execution functions (e.g. xp_cmdshell in MSSQL)</span>
+                    <button class="copy-btn" onclick="copySnippet(this, 'Disable database command execution functions (e.g. xp_cmdshell in MSSQL)')">📋 Copy</button>
+                </div>
+                
+            </div>
+        </div>
+        
+        </div>
+    </div>
+
+    <script>
+        function copySnippet(btn, text) {
+            const decoded = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+            // Extract command if line contains colon
+            let cmdToCopy = decoded;
+            if (decoded.includes(": ")) {
+                cmdToCopy = decoded.split(": ")[1];
+            }
+            navigator.clipboard.writeText(cmdToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "✓ Copied!";
+                btn.style.backgroundColor = "#10b981";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "";
+                }, 2000);
+            });
+        }
+
+        function filterThreats(severity, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const cards = document.querySelectorAll('.threat-card');
+            cards.forEach(card => {
+                const cardSev = card.getAttribute('data-severity');
+                if (severity === 'all') {
+                    card.style.display = 'block';
+                } else if (severity === 'medium') {
+                    card.style.display = (cardSev === 'medium' || cardSev === 'low') ? 'block' : 'none';
+                } else {
+                    card.style.display = cardSev === severity ? 'block' : 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

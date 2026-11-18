@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: shugo_postgres
+    environment:
+      POSTGRES_DB: shugo_cyber
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shugo_cyber"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  log_analysis_agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shugo_log_analysis
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres:5432/shugo_cyber
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      # Optional read-only mount of host logs for temporary tailer
+      - /var/log:/var/log:ro
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
